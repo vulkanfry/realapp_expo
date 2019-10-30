@@ -1,16 +1,13 @@
-# realapp_expo
-# realapp_expo
-# realapp_expo
-# realapp_expo
-# realapp_expo
+# RealWorldApp
 
-# realapp_expo# realapp_expo
-# realapp_expo
+this is [realworld webapp](https://github.com/gothinkster/realworld) for mobile frameworks
 
-# realapp_expo
-# realapp_expo
-# realapp_expo
-# realapp_expo
-# realapp_expo
+### See how *the exact same* qrcode scanner application clone is built using any of mobile fraameworks.
 
-# realapp_expo
+## Frameworks
+
+### [React Native](https://github.com/lunatic-cat/realapp)
+### [Expo](https://github.com/ByJIKaHkaz/realapp_expo)
+
+<p><img src="docs/scan.png" align="left" width="250px" /></p>
+<p><img src="docs/history.png" align="left" width="250px" /></p>
