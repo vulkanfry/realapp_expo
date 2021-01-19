@@ -1,0 +1,2 @@
+export const TICKET_FETCHED = 'TICKET_FETCHED';
+export const TICKET_FETCHING = 'TICKET_FETCHING';
