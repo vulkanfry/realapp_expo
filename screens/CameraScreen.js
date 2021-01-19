@@ -37,7 +37,7 @@ export default class CameraScreen extends React.Component {
     const { navigate } = this.props.navigation;
     const { qrData } = this.state;
     console.log(this.props)
-    if(!qrData) return;
+    if (!qrData) return;
     navigate('Links', { qrData: qrData })
   }
 
@@ -51,37 +51,37 @@ export default class CameraScreen extends React.Component {
       return (
         <View style={styles.container}>
 
-        <View style={{ flex: 1 }}>
-          <Camera
-            style={{ flex: 1 }}
-            type={this.state.type}
-            onBarCodeScanned={e => this.saveQrData(e)}
-          >
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: 'transparent',
-                flexDirection: 'row',
-              }}>
-            </View>
-          </Camera>
+          <View style={{ flex: 1 }}>
+            <Camera
+              style={{ flex: 1 }}
+              type={this.state.type}
+              onBarCodeScanned={e => this.saveQrData(e)}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: 'transparent',
+                  flexDirection: 'row',
+                }}>
+              </View>
+            </Camera>
+          </View>
+
+          <View style={styles.tabBarInfoContainer}>
+            <Button style={styles.tabBarButton} rounded bordered info large onPress={() => this.pushData()} >
+              {!qrData
+                ? <Text style={styles.tabBarInfoText}>Please scan qr</Text>
+                : <View>
+                  <Text style={styles.tabBarInfoText}>Send qr data:</Text>
+                  <MonoText style={styles.tabBarInfoText}>
+                    {qrData}
+                  </MonoText>
+                </View>
+              }
+            </Button>
+          </View>
         </View>
 
-      <View style={styles.tabBarInfoContainer}>
-          <Button style={styles.tabBarButton} rounded bordered info large onPress={() => this.pushData()} >
-                {!qrData
-                  ? <Text style={styles.tabBarInfoText}>Please scan qr</Text>
-                  : <View>
-                      <Text style={styles.tabBarInfoText}>Send qr data:</Text>
-                      <MonoText style={styles.tabBarInfoText}>
-                        {qrData}
-                      </MonoText>
-                    </View>
-                }
-          </Button>
-      </View>
-    </View>
-        
       );
     }
   }
@@ -120,7 +120,8 @@ const styles = StyleSheet.create({
   tabBarButton: {
     minWidth: 150,
     alignItems: 'center',
-    justifyContent:  'center',
+    justifyContent: 'center',
+    alignSelf: 'center'
   },
   tabBarInfoText: {
     fontSize: 14,

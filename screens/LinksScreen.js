@@ -1,49 +1,64 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import { camelizeKeys } from 'humps';
 import { ScrollView, Platform, Alert } from 'react-native';
 import { Content, List, ListItem, Left, Body, Right, Text } from 'native-base';
 import TabBarIcon from '../components/TabBarIcon';
+import moment from 'moment';
 
 export default class LinksComponent extends Component {
   state = {
-    data: []
+    data: [],
+    respBody: {}
   };
 
   async componentDidMount() {
-    const qrData = this.props.navigation.getParam('qrData', null);
     const server = this.props.screenProps.server;
+    const qrData = this.props.navigation.getParam('qrData', null).replace(server, '');
     if (qrData !== null) {
-      this.setState({ data: this.state.data.push({status: 0, name: qrData}) });
-      this.fetchData(qrData, server);
+      let data = [...this.state.data];
+      data.push({ status: 0, name: this.popup(0) });
+      this.setState({ data });
+      this.fetchData(qrData, server, data.length - 1);
     }
   }
 
-  async fetchData(data, server) {
-    return fetch(server, data)
-    .then((response) => this.setData(response.status))
-    .catch((error) => {
-      console.error(error);
-    });
+  async fetchData(data, server, index) {
+    return fetch(server + data, { redirect: 'manual' })
+      .then((response) => this.fetchApiData(response.url, index))
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
-  async fetchData(status) {
-    const qrData = this.props.navigation.getParam('qrData', {});
-    let dataStatus;
-    if (status === 200)
-      dataStatus = 1;
-    else
-      dataStatus = 2;
-    
-    const data = this.state.data.map((item, index) => {
-        return (index === this.state.data.length-1)
-          ? item = {status: dataStatus, name: qrData}
-          : item
+  async fetchApiData(url, index) {
+    const newUrl = url.replace(/ticket/, 'api/tickets/ticket')
+    return fetch(newUrl)
+      .then((resp) => resp.json())
+      .then((body) => this.setState({ respBody: camelizeKeys(body) }))
+      .then((_body) => this.setData(resp.ok ? 1 : 2, index))
+      .catch((error) => {
+        this.setData(2, index)
+        console.error(error);
       });
-     
-    this.setState({ data: data });
+  }
+
+  async setData(status, index) {
+    let data = [...this.state.data];
+    if (status !== 2) {
+      const fullDate = moment(this.state.respBody.ticket.transactionDate);
+      data[index] = ({
+        status,
+        name: this.state.respBody['orgTitle'],
+        date: fullDate.format('DD/MM/YYYY')
+      });
+    }
+    else
+      data[index] = ({ status, name: popup(status) })
+    this.setState({ data });
   }
 
   icon(status) {
-    switch(status){
+    switch (status) {
       case 0: return 'arrow-up';
       case 2: return 'arrow-down';
       case 1: return 'done-all';
@@ -51,7 +66,7 @@ export default class LinksComponent extends Component {
   }
 
   popup(status) {
-    switch(status){
+    switch (status) {
       case 0: return 'A thing in progress';
       case 2: return 'Failed submission';
       case 1: return 'Scanned text data ready to be sent';
@@ -70,20 +85,20 @@ export default class LinksComponent extends Component {
   }
 
   render() {
+    const date = moment(new Date().getDate().toString()).format('DD/MM/YYYY'); //Current Date
     const defaultDesc = [
-      {status: 0, name: 'A thing in progress'},
-      {status: 1, name: 'Scanned text data ready to be sent'},
-      {status: 2, name: 'Failed submission'}
+      { status: 0, name: 'A thing in progress', date },
+      { status: 1, name: 'Scanned text data ready to be sent', date },
+      { status: 2, name: 'Failed submission', date }
     ];
+    console.log(this.state.data)
     const data = this.state.data.length > 0 ? this.state.data : defaultDesc;
-    const date = new Date().getDate(); //Current Date
-    const month = new Date().getMonth() + 1; //Current Month
-    const year = new Date().getFullYear(); //Current Year
+
     return (
       <ScrollView>
         <Content>
           <List>
-            { data.map((item, index) => {
+            {data.map((item, index) => {
               return (
                 <ListItem key={index} onPress={() => this.modal(item.status)} avatar>
                   <Left>
@@ -100,12 +115,12 @@ export default class LinksComponent extends Component {
                     <Text note>{item.name}</Text>
                   </Body>
                   <Right>
-                    <Text note>{date + '/' + month + '/' + year}</Text>
+                    <Text note>{item.date}</Text>
                   </Right>
                 </ListItem>
               )
             })}
-            
+
           </List>
         </Content>
       </ScrollView>

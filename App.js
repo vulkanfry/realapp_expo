@@ -1,4 +1,4 @@
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
@@ -9,7 +9,7 @@ import AppNavigator from './navigation/AppNavigator';
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
-  const [server] = useState('http://httpbin.org/status/200,500');
+  const [server] = useState('http://consumer.oofd.kz');
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
@@ -23,7 +23,7 @@ export default function App(props) {
     return (
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        <AppNavigator screenProps={{server: server}} />
+        <AppNavigator screenProps={{server}} />
       </View>
     );
   }

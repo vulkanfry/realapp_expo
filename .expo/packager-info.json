@@ -1,9 +1,10 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": null,
+  "expoServerPort": null,
+  "packagerPort": 19000,
   "packagerPid": null,
-  "expoServerNgrokUrl": "https://c2-uq8.anonymous.realworldapp-expo.exp.direct",
-  "packagerNgrokUrl": "https://packager.c2-uq8.anonymous.realworldapp-expo.exp.direct",
-  "ngrokPid": 13480
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null,
+  "webpackServerPort": null
 }
