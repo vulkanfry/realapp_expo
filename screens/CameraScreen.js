@@ -9,9 +9,10 @@ import {
   Vibration,
 } from 'react-native';
 import { MonoText } from '../components/StyledText';
+import { withNavigationFocus } from 'react-navigation';
 import { Container, Header, Content, Button, Icon } from 'native-base';
 
-export default class CameraScreen extends React.Component {
+class CameraScreen extends React.Component {
   state = {
     hasCameraPermission: null,
     type: Camera.Constants.Type.back,
@@ -28,6 +29,10 @@ export default class CameraScreen extends React.Component {
     this.setState({ hasCameraPermission: status === 'granted' });
   }
 
+  async componentWillUnmount() {
+    console.log(1)
+  }
+
   async saveQrData(data) {
     Vibration.vibrate(5)
     this.setState({ qrData: data.data });
@@ -38,7 +43,8 @@ export default class CameraScreen extends React.Component {
     const { qrData } = this.state;
     console.log(this.props)
     if (!qrData) return;
-    navigate('Links', { qrData: qrData })
+    this.setState({ qrData: null });
+    navigate('Links', { qrData: qrData });
   }
 
   render() {
@@ -48,7 +54,7 @@ export default class CameraScreen extends React.Component {
     } else if (hasCameraPermission === false) {
       return <Text>No access to camera</Text>;
     } else {
-      return (
+      return this.props.isFocused ? (
         <View style={styles.container}>
 
           <View style={{ flex: 1 }}>
@@ -82,10 +88,12 @@ export default class CameraScreen extends React.Component {
           </View>
         </View>
 
-      );
+      ) : null;
     }
   }
 }
+
+export default withNavigationFocus(CameraScreen);
 
 CameraScreen.navigationOptions = {
   title: 'QrScanner',
