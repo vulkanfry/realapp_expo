@@ -3,9 +3,12 @@ import { connect } from 'react-redux';
 import Item from '../components/Item';
 import _ from 'lodash';
 import moment from 'moment';
+import Modal from '../components/Modal';
+import { collapsePopup } from '../store/ui/itemPopup/actions';
 
 function mapStateToProps(state, ownProps) {
   const { ticketDetails } = state;
+  const popupOpened = state.ui.popupOpened.popup.opened;
   const { item } = ownProps;
   const status = item === 1 ? 0 : 1;
   const orgTitle = ticketDetails[item].orgTitle;
@@ -13,19 +16,24 @@ function mapStateToProps(state, ownProps) {
   return {
     status,
     date,
-    orgTitle
+    orgTitle,
+    popupOpened
   };
 };
 
 export class ItemContainer extends React.Component {
   render() {
-    const { orgTitle, date, status } = this.props;
+    const { orgTitle, date, status, popupOpened, dispatch } = this.props;
     return (
-      <Item
-        date={date}
-        status={status}
-        orgTitle={orgTitle}
-      />
+      <div>
+        <Modal opened = {popupOpened} onClose={e => dispatch(collapsePopup())}/>
+        <Item
+          date={date}
+          status={status}
+          orgTitle={orgTitle}
+          onOpenModal={e => dispatch(collapsePopup())}
+        />
+      </div>
     );
   };
 }

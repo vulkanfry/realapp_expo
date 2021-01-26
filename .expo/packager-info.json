@@ -3,8 +3,8 @@
   "expoServerPort": 19000,
   "packagerPort": 19000,
   "packagerPid": null,
-  "expoServerNgrokUrl": "https://c2-uq8.anonymous.realapp-expo.exp.direct",
-  "packagerNgrokUrl": "https://packager.c2-uq8.anonymous.realapp-expo.exp.direct",
-  "ngrokPid": 67319,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null,
   "webpackServerPort": 19006
 }

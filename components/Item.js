@@ -18,7 +18,7 @@ function modal(status) {
 export default function Item(props) {
   const { date, status, orgTitle } = props;
   return (
-    <ListItem onPress={() => modal(status)} avatar>
+    <ListItem onPress={() => props.onOpenModal(status)} avatar>
       <Left>
         <TabBarIcon
           name={
