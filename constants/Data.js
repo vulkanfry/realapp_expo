@@ -8,7 +8,7 @@ export function icon(status) {
   switch (status) {
     case 0: return 'arrow-up';
     case 2: return 'arrow-down';
-    case 1: return 'done-all';
+    case 1: return 'checkmark-done';
   }
 }
 

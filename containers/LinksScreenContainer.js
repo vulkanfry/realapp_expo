@@ -7,12 +7,13 @@ import { fetchTickets } from '../store/tickets/actions';
 import { withNavigationFocus } from 'react-navigation';
 
 function mapStateToProps(state, ownProps) {
-  const { tickets } = state;
+  const { tickets, ticketDetails } = state;
   const server = ownProps.screenProps.server
   const qrData = ownProps.navigation.getParam('qrData', null)
-
+  console.log(state)
   return {
     tickets,
+    ticketDetails,
     server,
     qrData: qrData ? qrData.replace(server, '') : qrData
   };
@@ -30,18 +31,17 @@ export class LinksScreenContainer extends React.Component {
   }
 
   async componentDidUpdate(prevProps) {
-    if (!_.isEqual(this.props.qrData,prevProps.qrData))
-      return this.props.isFocused ? this.fetch() : null;
-    return true;
+    return this.props.isFocused ? this.fetch() : null;
   }
 
   render() {
-    const { tickets, qrData } = this.props;
+    const { tickets, qrData, ticketDetails } = this.props;
     return (
       <LinkScreen
         fetchTickets={this.fetch.bind(this)}
         tickets={tickets}
         qrData={qrData}
+        ticketDetails={ticketDetails}
       />
     );
   };

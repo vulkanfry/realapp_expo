@@ -1,2 +1,3 @@
 export const TICKET_FETCHED = 'TICKET_FETCHED';
 export const TICKET_FETCHING = 'TICKET_FETCHING';
+export const QR_DATA_SAVE = 'QR_DATA_SAVE';
