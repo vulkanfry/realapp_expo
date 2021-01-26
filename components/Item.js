@@ -1,19 +1,8 @@
 import React from 'react';
 import { ActivityIndicator, Platform, Alert } from 'react-native';
 import { ListItem, Left, Body, Right, Text } from 'native-base';
-import { icon, popup } from '../constants/Data';
+import { icon } from '../constants/Data';
 import TabBarIcon from './TabBarIcon';
-
-function modal(status) {
-  Alert.alert(
-    '',
-    popup(status),
-    [
-      { text: 'OK', onPress: () => console.log('OK Pressed') },
-    ],
-    { cancelable: true }
-  );
-}
 
 export default function Item(props) {
   const { date, status, orgTitle } = props;

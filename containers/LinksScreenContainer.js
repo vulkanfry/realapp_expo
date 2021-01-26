@@ -9,13 +9,13 @@ import { withNavigationFocus } from 'react-navigation';
 function mapStateToProps(state, ownProps) {
   const { tickets, ticketDetails } = state;
   const server = ownProps.screenProps.server
-  const qrData = ownProps.navigation.getParam('qrData', null)
-  console.log(state)
+  const qrData = state.qrDatas;
+
   return {
     tickets,
     ticketDetails,
     server,
-    qrData: qrData ? qrData.replace(server, '') : qrData
+    qrData
   };
 };
 

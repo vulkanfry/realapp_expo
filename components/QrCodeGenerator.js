@@ -6,25 +6,7 @@ import Dialog, {
   DialogButton,
   DialogContent,
 } from "react-native-popup-dialog";
-import {
-  Card,
-  Button,
-  CardItem,
-  Text,
-  ListItem,
-  H2,
-  Icon,
-  Right,
-} from "native-base";
-import {
-  Table,
-  TableWrapper,
-  Row,
-  Rows,
-  Col,
-  Cols,
-  Cell,
-} from "react-native-table-component";
+import { Item, Input, Icon, H2 } from 'native-base';
 
 function SimpleDialog(props) {
   const { onClose, selectedValue } = props;
@@ -53,44 +35,29 @@ function SimpleDialog(props) {
               paddingRight: 10,
             }}
           >
-            Результат проверки чека
+            Введите данные с чека
           </H2>
-          <Table style={{ padding: 10 }} borderStyle={{ borderWidth: 0 }}>
-            <Rows data={infoHeader} textStyle={styles.TableText} />
-          </Table>
-          <Table style={{ padding: 10 }} borderStyle={{ borderWidth: 0 }}>
-            <Rows data={body} textStyle={styles.TableText} />
-          </Table>
-          <Button
-            iconLeft
-            bordered
-            success
-            style={{
-              padding: 10,
-              alignSelf: "center",
-            }}
-          >
-            <Text style={{ color: "green" }}>Сохранить</Text>
-            <Icon name="arrow-down" />
-          </Button>
+          <Item success>
+            <Input placeholder='Фискальный признак'/>
+            <Icon name='checkmark-circle' />
+          </Item>
+          <Item success>
+            <Input placeholder='Регистрационный номер'/>
+            <Icon name='checkmark-circle' />
+          </Item>
+          <Item success>
+            <Input placeholder='Сумма'/>
+            <Icon name='checkmark-circle' />
+          </Item>
+          <Item success>
+            <Input placeholder='Дата (с точностью до секунды)'/>
+            <Icon name='checkmark-circle' />
+          </Item>
         </DialogContent>
       </Dialog>
     </View>
   );
 }
-
-const infoHeader = [
-  ["ИИН/БИН", 1],
-  ["Сер. номер ККМ", 1],
-  ["Регистрационный номер", 1],
-  ["Вид платежа"],
-  ["ФП", 1],
-  ["Дата", 1],
-];
-
-const header = ["Название", "Цена", "Количество", "Сумма"];
-
-const body = [["Название", "Цена", "Количество", "Сумма"]];
 
 const styles = StyleSheet.create({
   HeadStyle: {
@@ -119,12 +86,13 @@ SimpleDialog.propTypes = {
   open: PropTypes.bool.isRequired,
 };
 
-export default function Modal(props) {
+export default function QrCodeGenerator(props) {
   return (
     <SimpleDialog
-      selectedValue={[]}
+      selectedValue={props.qrCodeData}
       open={props.opened}
       onClose={props.onClose}
+      onSave={props.onSave}
     />
   );
 }

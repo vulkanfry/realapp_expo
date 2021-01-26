@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
-import CameraScreen from '../screens/CameraScreen';
+import CameraScreenContainer from '../containers/CameraScreenContainer';
 import LinksScreenContainer from '../containers/LinksScreenContainer';
 import SettingsScreen from '../screens/SettingsScreen';
 
@@ -14,7 +14,7 @@ const config = Platform.select({
 
 const CameraStack = createStackNavigator(
   {
-    Camera: props => <CameraScreen {...props} />,
+    Camera: props => <CameraScreenContainer {...props} />,
   },
   config
 );
