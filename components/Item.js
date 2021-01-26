@@ -20,15 +20,18 @@ export default function Item(props) {
   return (
     <ListItem onPress={() => props.onOpenModal(status)} avatar>
       <Left>
-        <TabBarIcon
-          name={
-            Platform.OS === 'ios'
-              ? `ios-${icon(status)}`
-              : `zmdi-${icon(status)}`
-          }
-        />
+        {status === 1
+          ? <TabBarIcon
+            name={
+              Platform.OS === 'ios'
+                ? `ios-${icon(status)}`
+                : `md-${icon(status)}`
+            }
+          />
+          : <ActivityIndicator size="small" color="#0000ff" />
+        }
       </Left>
-      <ActivityIndicator size="small" color="#0000ff" />
+
       <Body>
         <Text note>{orgTitle}</Text>
       </Body>

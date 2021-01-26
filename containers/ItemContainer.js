@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Item from '../components/Item';
 import _ from 'lodash';
 import moment from 'moment';
+import { View} from 'react-native';
 import Modal from '../components/Modal';
 import { collapsePopup } from '../store/ui/itemPopup/actions';
 
@@ -25,7 +26,7 @@ export class ItemContainer extends React.Component {
   render() {
     const { orgTitle, date, status, popupOpened, dispatch } = this.props;
     return (
-      <div>
+      <View>
         <Modal opened = {popupOpened} onClose={e => dispatch(collapsePopup())}/>
         <Item
           date={date}
@@ -33,7 +34,7 @@ export class ItemContainer extends React.Component {
           orgTitle={orgTitle}
           onOpenModal={e => dispatch(collapsePopup())}
         />
-      </div>
+      </View>
     );
   };
 }
