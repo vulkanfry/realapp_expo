@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import CameraScreen from '../screens/CameraScreen';
-import { View} from 'react-native';
+import { View } from 'react-native';
 import * as Permissions from "expo-permissions";
 import _ from 'lodash';
-import { Camera } from "expo-camera";
 import QrCodeGenerator from '../components/QrCodeGenerator';
-import { collapsePopup } from '../store/ui/itemPopup/actions';
+import { collapseQrGenerator } from '../store/ui/itemPopup/actions';
 import { changeQrData } from '../store/ui/qrData/actions';
 import { genQr, selectedAction } from '../store/qrDatas/actions';
 import { withNavigationFocus } from 'react-navigation';
@@ -16,15 +15,17 @@ const selectAction = (qrData, qrDatas) => {
 }
 
 function mapStateToProps(state) {
-  const popupOpened = state.ui.popupOpened.popup.opened;
+  const popupOpened = state.ui.popupOpened.qrGenerator.opened;
   const { qrData } = state.ui;
-  const {qrDatas} = state;
+  const { qrDatas } = state;
   const generatedData = genQr(qrData);
   const action = selectAction(generatedData, qrDatas);
+  console.log(state)
   return {
     generatedData,
     popupOpened,
     qrDatas,
+    qrData,
     action
   };
 };
@@ -44,22 +45,24 @@ export class CameraScreenContainer extends React.Component {
     this.setState({ hasCameraPermission: status === "granted" });
   }
 
-  async componentDidUpdate() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === "granted" });
-  }
+  // async componentDidUpdate() {
+  //   const { status } = await Permissions.askAsync(Permissions.CAMERA);
+  //   this.setState({ hasCameraPermission: status === "granted" });
+  // }
 
   render() {
-    const { popupOpened, qrDatas, dispatch, action, generatedData } = this.props;
-    return (<View>
-      <QrCodeGenerator qrCodeData = {generatedData} opened = {popupOpened} onChange={e=> dispatch(changeQrData(e))} onSave={e=> dispatch(action(generatedData))} onClose={e => dispatch(collapsePopup())}/>
+    const { popupOpened, qrDatas, qrData, dispatch, action, generatedData } = this.props;
+    console.log(1, qrData)
+    return this.props.isFocused ? (
       <CameraScreen
         hasCameraPermission={this.state.hasCameraPermission}
         qrData={qrDatas}
-        saveQr={qrData => dispatch(saveQr(qrData, qrDatas))}
-        openQrGenerateModal={e => dispatch(collapsePopup())}
-      /></View>
-    );
+        saveQr={qrData => dispatch(this.saveQr(qrData.replace('http://consumer.oofd.kz', ''), qrDatas))}
+        openQrGenerateModal={e => dispatch(collapseQrGenerator())}
+      >
+        <QrCodeGenerator qrCodeData={qrData} opened={popupOpened} onChange={e => dispatch(changeQrData(e))} onSave={e => dispatch(action(generatedData))} onClose={e => dispatch(collapseQrGenerator())} />
+      </CameraScreen>
+    ) : null;
   };
 }
 

@@ -21,17 +21,17 @@ function mapStateToProps(state, ownProps) {
 
 export class LinksScreenContainer extends React.Component {
 
-  fetch(){
+  async fetch() {
     this.props.dispatch(fetchTickets(this.props.qrData, this.props.server));
   };
 
   async componentDidMount() {
-    if (this.props.qrData)
+    if (!_.isEmpty(this.props.qrData))
       this.fetch()
   }
 
   async componentDidUpdate(prevProps) {
-    return this.props.isFocused ? this.fetch() : null;
+    return this.props.isFocused && !_.isEmpty(this.props.qrData) ? this.fetch() : null;
   }
 
   render() {

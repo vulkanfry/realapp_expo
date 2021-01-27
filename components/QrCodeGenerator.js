@@ -9,10 +9,18 @@ import Dialog, {
 import { Item, Input, Icon, H2 } from 'native-base';
 
 function SimpleDialog(props) {
-  const { onClose, selectedValue } = props;
+  const { onClose, selectedValue, qrCodeData, onSave, onChange } = props;
+  const [rn, setRn] = React.useState("")
+  const [fp, setFp] = React.useState("")
+  const [sum, setSum] = React.useState("")
+  const [time, setTime] = React.useState("")
 
   const handleClose = () => {
-    onClose(selectedValue);
+    onClose();
+  };
+
+  const handleSave = () => {
+    onSave();
   };
 
   return (
@@ -22,7 +30,7 @@ function SimpleDialog(props) {
         footer={
           <DialogFooter>
             <DialogButton text="CANCEL" onPress={() => handleClose()} />
-            <DialogButton text="OK" onPress={() => handleClose()} />
+            <DialogButton text="OK" onPress={() => handleSave()} />
           </DialogFooter>
         }
       >
@@ -38,20 +46,16 @@ function SimpleDialog(props) {
             Введите данные с чека
           </H2>
           <Item success>
-            <Input placeholder='Фискальный признак'/>
-            <Icon name='checkmark-circle' />
+            <Input onBlur={e => onChange({ fp })} onChangeText={setFp} value={fp} placeholder='Фискальный признак' />
           </Item>
           <Item success>
-            <Input placeholder='Регистрационный номер'/>
-            <Icon name='checkmark-circle' />
+            <Input onBlur={e => onChange({ rn })} onChangeText={setRn} value={rn} placeholder='Регистрационный номер' />
           </Item>
           <Item success>
-            <Input placeholder='Сумма'/>
-            <Icon name='checkmark-circle' />
+            <Input onBlur={e => onChange({ sum })} onChangeText={setSum} value={sum} placeholder='Сумма' />
           </Item>
           <Item success>
-            <Input placeholder='Дата (с точностью до секунды)'/>
-            <Icon name='checkmark-circle' />
+            <Input onBlur={e => onChange({ time })} onChangeText={setTime} value={time} placeholder='Дата (с точностью до секунды)' />
           </Item>
         </DialogContent>
       </Dialog>
@@ -89,10 +93,11 @@ SimpleDialog.propTypes = {
 export default function QrCodeGenerator(props) {
   return (
     <SimpleDialog
-      selectedValue={props.qrCodeData}
+      qrCodeData={props.qrCodeData}
       open={props.opened}
       onClose={props.onClose}
       onSave={props.onSave}
+      onChange={props.onChange}
     />
   );
 }

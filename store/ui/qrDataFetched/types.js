@@ -1,0 +1,1 @@
+export const CHANGE_QR_DATA = 'CHANGE_QR_DATA';
