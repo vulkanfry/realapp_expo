@@ -6,7 +6,8 @@ import Dialog, {
   DialogButton,
   DialogContent,
 } from "react-native-popup-dialog";
-import { Item, Input, Icon, H2 } from 'native-base';
+import { H2 } from 'native-base';
+import { HelperText, TextInput } from 'react-native-paper';
 
 function SimpleDialog(props) {
   const { onClose, selectedValue, qrCodeData, onSave, onChange } = props;
@@ -14,6 +15,16 @@ function SimpleDialog(props) {
   const [fp, setFp] = React.useState("")
   const [sum, setSum] = React.useState("")
   const [time, setTime] = React.useState("")
+  const [error, setError] = React.useState(false)
+
+  const validation = (value) => { // TODO: errors = []; errors.push(errorMessage)
+    return {
+      fp: _.isEmpty(value),
+      rn: _.isEmpty(value),
+      sum: _.parseInt(value) < 0,
+      time: _.isEmpty(value)
+    }
+  }
 
   const handleClose = () => {
     onClose();
@@ -21,6 +32,14 @@ function SimpleDialog(props) {
 
   const handleSave = () => {
     onSave();
+  };
+
+  const hasErrors = (key, text) => {
+    const hasError = validation(text)[key];
+
+    setError(hasError)
+
+    return hasError;
   };
 
   return (
@@ -45,18 +64,30 @@ function SimpleDialog(props) {
           >
             Введите данные с чека
           </H2>
-          <Item success>
-            <Input onBlur={e => onChange({ fp })} onChangeText={setFp} value={fp} placeholder='Фискальный признак' />
-          </Item>
-          <Item success>
-            <Input onBlur={e => onChange({ rn })} onChangeText={setRn} value={rn} placeholder='Регистрационный номер' />
-          </Item>
-          <Item success>
-            <Input onBlur={e => onChange({ sum })} onChangeText={setSum} value={sum} placeholder='Сумма' />
-          </Item>
-          <Item success>
-            <Input onBlur={e => onChange({ time })} onChangeText={setTime} value={time} placeholder='Дата (с точностью до секунды)' />
-          </Item>
+          <View>
+            <TextInput onBlur={e => error ? null : onChange({ fp })} label="Фискальный признак" value={fp} onChangeText={setFp} />
+            <HelperText type="error" visible={hasErrors('fp', fp)}>
+              Фискальный признак пуст
+            </HelperText>
+          </View>
+          <View>
+            <TextInput onBlur={e => error ? null : onChange({ rn })} label="Регистрационный номер" value={rn} onChangeText={setRn} />
+            <HelperText type="error" visible={hasErrors('rn', rn)}>
+              Регистрационный номер пуст
+            </HelperText>
+          </View>
+          <View>
+            <TextInput onBlur={e => error ? null : onChange({ sum })} label="Сумма" value={sum} onChangeText={setSum} />
+            <HelperText type="error" visible={hasErrors('sum', sum)}>
+              Сумма не может быть меньше нуля!
+            </HelperText>
+          </View>
+          <View>
+            <TextInput onBlur={e => error ? null : onChange({ time })} label="Дата (с точностью до секунды)" value={time} onChangeText={setTime} />
+            <HelperText type="error" visible={hasErrors('time', time)}>
+              Дата пуста
+            </HelperText>
+          </View>
         </DialogContent>
       </Dialog>
     </View>
