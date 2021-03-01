@@ -1,0 +1,152 @@
+version: 2
+jobs:
+  build-docker:
+    working_directory: /ezil-slack-bot
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache \
+              py-pip=9.0.0-r1
+            pip install \
+              docker-compose==1.12.0 \
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/ezil-slack-bot.tar
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/ezil-slack-bot.tar | true
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build --cache-from=ezil-slack-bot -t ezil-slack-bot .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/ezil-slack-bot.tar ezil-slack-bot
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/ezil-slack-bot.tar
+
+  setup:
+    docker:
+      - image: circleci/ruby:2.7,2
+    steps:
+      - checkout
+
+      - run: gem update --system
+      - run: gem install bundler
+
+      - restore_cache:
+          keys:
+            - bundle-{{ checksum "Gemfile.lock" }}
+      - run: bundle install --path vendor/bundle
+      - save_cache:
+          key: bundle-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+  test:
+    docker:
+      - image: circleci/ruby:2.7.2
+        environment:
+          RAILS_HOST_NAME: localhost
+          BASE_URL: http://localhost
+          TEST_DATABASE_HOST: localhost
+          TEST_DATABASE_USERNAME: postgres
+          TEST_DATABASE: slack-bot-test
+          TEST_DATABASE_PASSWORD: postgres
+          TEST_DATABASE_PORT: 5432
+      - image: circleci/postgres:13
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: slack-bot-test
+          POSTGRES_PASSWORD: secret
+      - image: circleci/redis:latest
+    parallelism: 2
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - webpack-{{ .Revision }}
+      - restore_cache:
+          keys:
+            - bundle-{{ checksum "Gemfile.lock" }}
+      
+      # Get test env
+      - run: cp .test.env .env
+
+      - run: gem update --system
+      - run: gem install bundler
+      - run: bundle install --path vendor/bundle
+      - run: sudo apt install postgresql-client
+      - run: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run: bundle exec rake db:create
+      - run: bundle exec rake db:schema:load
+
+      - run:
+          name: Specs
+          command: |
+            TESTFILES=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+            bundle exec rspec $TESTFILES --profile 10 --format RspecJunitFormatter --out ~/spec-timings/rspec.xml --format progress
+      - store_test_results:
+          path: ~/spec-timings
+  deploy:
+    steps:
+      - checkout
+      - run:
+          name: Deploy to production
+          command: |
+            if [ "$ {CIRCLE_BRANCH}" == "master" ]; then
+              login="$(ECR_DOCKER_LOGIN)"
+              ${login}
+              docker tag ezil-slack-bot "${ECR_ENDPOINT}/ezil-slack-bot:${CIRCLE_SHA1}"
+              docker push "${ECR_ENDPOINT}/ezil-slack-bot:${CIRCLE_SHA1}"
+            fi
+          no_output_timeout: 10m
+  staging:
+    steps:
+      - checkout
+      - run:
+          name: Deploy to staging
+          command: |
+            if [ "$ {CIRCLE_BRANCH}" == "staging" ]; then
+              login="$(ECR_LOGIN)"
+              ${login}
+              docker tag ezil-slack-bot "${ECR_DOCKER_LOGIN}/ezil-slack-bot-staging:${CIRCLE_SHA1}"
+              docker push "${ECR_DOCKER_LOGIN}/ezil-slack-bot-staging:${CIRCLE_SHA1}"
+            fi
+          no_output_timeout: 10m
+
+workflows:
+  version: 2
+  setup_and_test:
+    jobs:
+      - setup
+      - test:
+          requires:
+            - setup
+            workflows:
+      - deploy:
+          requires:
+            - test
+            - build-docker
+          filters:
+            branches:
+              only: master
+      - staging:
+          requires:
+            - test
+            - build-docker
+          filters:
+            branches:
+              only: staging
