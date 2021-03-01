@@ -135,7 +135,6 @@ workflows:
       - test:
           requires:
             - setup
-            workflows:
       - deploy:
           requires:
             - test
