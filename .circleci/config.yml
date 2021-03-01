@@ -101,6 +101,8 @@ jobs:
       - store_test_results:
           path: ~/spec-timings
   deploy:
+    docker:
+      - image: ezil-slack-bot
     steps:
       - checkout
       - run:
@@ -114,6 +116,8 @@ jobs:
             fi
           no_output_timeout: 10m
   staging:
+    docker:
+      - image: ezil-slack-bot
     steps:
       - checkout
       - run:
