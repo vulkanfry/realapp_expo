@@ -135,6 +135,7 @@ workflows:
       - test:
           requires:
             - setup
+      - build-docker
       - deploy:
           requires:
             - test
